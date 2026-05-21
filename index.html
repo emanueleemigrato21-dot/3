@@ -1,0 +1,1060 @@
+cat > /home/claude/index.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RealRP — Vivi la Tua Storia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { display: ['Oxanium','sans-serif'], body: ['DM Sans','sans-serif'] } } }
+    }
+  </script>
+
+  <style>
+    /* ══════════════ CSS VARS ══════════════ */
+    :root {
+      --purple:      #a855f7;
+      --purple-dim:  #7c3aed;
+      --fuchsia:     #e879f9;
+      --electric:    #818cf8;
+      --bg:          #06060a;
+      --bg2:         #0c0c12;
+      --border:      rgba(168,85,247,.15);
+      --text-muted:  #71717a;
+      --text-dim:    #a1a1aa;
+      --text-base:   #e4e4e7;
+      --ease-spring: cubic-bezier(.34,1.56,.64,1);
+      --ease-out:    cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text-base); overflow-x: hidden; cursor: none; }
+
+    /* ── NOISE ── */
+    body::after {
+      content:''; position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:9997; opacity:.45;
+    }
+
+    /* ── CURSOR ── */
+    .cursor-dot {
+      position:fixed; width:8px; height:8px; background:var(--purple);
+      border-radius:50%; pointer-events:none; z-index:99999;
+      transform:translate(-50%,-50%); transition:width .15s,height .15s,transform .1s; mix-blend-mode:screen;
+    }
+    .cursor-ring {
+      position:fixed; width:36px; height:36px; border:1.5px solid rgba(168,85,247,.45);
+      border-radius:50%; pointer-events:none; z-index:99998; transform:translate(-50%,-50%);
+      transition:width .25s var(--ease-spring),height .25s var(--ease-spring),border-color .25s,background .25s,opacity .25s;
+    }
+    .cursor-ring.expand { width:56px; height:56px; border-color:rgba(232,121,249,.6); background:rgba(168,85,247,.05); }
+
+    /* ── GRADIENT TEXT ── */
+    .gt-purple { background:linear-gradient(135deg,#f0abfc 0%,#a855f7 45%,#818cf8 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .gt-warm   { background:linear-gradient(90deg,#a855f7,#e879f9); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .gt-cool   { background:linear-gradient(90deg,#818cf8,#a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .text-glow { text-shadow:0 0 28px rgba(168,85,247,.7),0 0 70px rgba(168,85,247,.2); }
+
+    /* ══════════════ NAVBAR ══════════════ */
+    .navbar {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      background:rgba(6,6,10,.6); backdrop-filter:blur(28px) saturate(160%); -webkit-backdrop-filter:blur(28px) saturate(160%);
+      border-bottom:1px solid rgba(168,85,247,.08); transition:background .3s,border-color .3s;
+    }
+    .navbar.scrolled { background:rgba(6,6,10,.9); border-color:rgba(168,85,247,.18); }
+    .nav-link { position:relative; color:var(--text-muted); font-size:.875rem; font-weight:500; letter-spacing:.03em; transition:color .2s; padding:.25rem 0; }
+    .nav-link::after { content:''; position:absolute; bottom:-2px; left:50%; right:50%; height:1.5px; background:linear-gradient(90deg,var(--purple),var(--fuchsia)); border-radius:2px; transition:left .3s var(--ease-spring),right .3s var(--ease-spring); }
+    .nav-link:hover { color:#fff; }
+    .nav-link:hover::after { left:0; right:0; }
+
+    /* ══════════════ HERO ══════════════ */
+    .hero-bg {
+      background:
+        radial-gradient(ellipse 100% 70% at 50% -10%,rgba(168,85,247,.18) 0%,transparent 65%),
+        radial-gradient(ellipse 60% 50% at 90% 60%,rgba(232,121,249,.08) 0%,transparent 60%),
+        radial-gradient(ellipse 45% 45% at 5% 85%,rgba(129,140,248,.07) 0%,transparent 60%),
+        var(--bg);
+    }
+    .hero-grid {
+      background-image:
+        linear-gradient(rgba(168,85,247,.032) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(168,85,247,.032) 1px,transparent 1px);
+      background-size:72px 72px;
+    }
+
+    /* Scanlines traveling down the grid */
+    @keyframes scanline-h {
+      0%   { transform:translateY(-100%); opacity:0; }
+      10%  { opacity:1; }
+      90%  { opacity:1; }
+      100% { transform:translateY(calc(100vh + 100%)); opacity:0; }
+    }
+    @keyframes scanline-v {
+      0%   { transform:translateX(-100%); opacity:0; }
+      10%  { opacity:1; }
+      90%  { opacity:1; }
+      100% { transform:translateX(calc(100vw + 100%)); opacity:0; }
+    }
+    .scan-h {
+      position:absolute; left:0; right:0; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(168,85,247,.5),rgba(232,121,249,.4),transparent);
+      animation:scanline-h 5s ease-in-out infinite;
+      pointer-events:none;
+    }
+    .scan-h:nth-child(2) { animation-delay:2.5s; }
+    .scan-v {
+      position:absolute; top:0; bottom:0; width:1px;
+      background:linear-gradient(180deg,transparent,rgba(168,85,247,.35),rgba(129,140,248,.3),transparent);
+      animation:scanline-v 7s ease-in-out infinite;
+      pointer-events:none;
+    }
+    .scan-v:nth-child(4) { animation-delay:3.5s; }
+
+    /* Orbs */
+    .orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); will-change:transform; }
+    .orb-1 { width:700px; height:700px; background:radial-gradient(circle,rgba(168,85,247,.12) 0%,transparent 65%); top:50%; left:50%; transform:translate(-50%,-50%); }
+    .orb-2 { width:350px; height:350px; background:radial-gradient(circle,rgba(232,121,249,.1) 0%,transparent 65%); top:20%; right:5%; }
+    .orb-3 { width:280px; height:280px; background:radial-gradient(circle,rgba(129,140,248,.08) 0%,transparent 65%); bottom:15%; left:8%; }
+
+    /* Live dot */
+    @keyframes pulse-ring { 0% { transform:scale(1); opacity:.8; } 70% { transform:scale(2.2); opacity:0; } 100% { transform:scale(2.2); opacity:0; } }
+    .live-dot { position:relative; display:inline-flex; align-items:center; justify-content:center; width:10px; height:10px; }
+    .live-dot::before { content:''; position:absolute; inset:0; border-radius:50%; background:#22c55e; animation:pulse-ring 2s ease-out infinite; }
+    .live-dot::after { content:''; position:relative; display:inline-block; width:10px; height:10px; border-radius:50%; background:#22c55e; box-shadow:0 0 8px rgba(34,197,94,.7); }
+
+    .hero-badge { background:rgba(10,10,16,.8); border:1px solid rgba(168,85,247,.2); backdrop-filter:blur(12px); transition:border-color .3s,box-shadow .3s; }
+    .hero-badge:hover { border-color:rgba(168,85,247,.45); box-shadow:0 0 24px rgba(168,85,247,.12); }
+
+    /* Logo float */
+    @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+    .hero-logo { animation:float 5s ease-in-out infinite; filter:drop-shadow(0 0 40px rgba(168,85,247,.55)) drop-shadow(0 0 80px rgba(168,85,247,.18)); }
+
+    /* Scroll indicator */
+    @keyframes scroll-bounce { 0%,100% { transform:translateX(-50%) translateY(0); opacity:.35; } 50% { transform:translateX(-50%) translateY(8px); opacity:.7; } }
+    .scroll-indicator { animation:scroll-bounce 2.2s ease-in-out infinite; }
+
+    /* ══════════════ STATS ══════════════ */
+    .stats-strip {
+      background:linear-gradient(90deg,rgba(168,85,247,.06) 0%,rgba(232,121,249,.04) 50%,rgba(129,140,248,.06) 100%);
+      border-top:1px solid rgba(168,85,247,.15); border-bottom:1px solid rgba(168,85,247,.15);
+      position:relative; overflow:hidden;
+    }
+    .stats-strip::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(90deg,transparent,rgba(168,85,247,.05),transparent);
+      animation:sweep 4s linear infinite;
+    }
+    @keyframes sweep { from { transform:translateX(-100%); } to { transform:translateX(100%); } }
+    .stat-num { transition:filter .3s; }
+    .stat-num:hover { filter:drop-shadow(0 0 18px currentColor); }
+
+    /* ══════════════ DIVIDER ══════════════ */
+    .divider { height:1px; background:linear-gradient(90deg,transparent,rgba(168,85,247,.3),transparent); }
+
+    /* ══════════════ SECTION LABEL ══════════════ */
+    .section-label {
+      display:inline-flex; align-items:center; gap:.45rem;
+      font-family:'Oxanium',sans-serif; font-size:.68rem; font-weight:700;
+      letter-spacing:.14em; text-transform:uppercase; color:#c084fc;
+      border:1px solid rgba(168,85,247,.28); background:rgba(168,85,247,.07);
+      padding:.35rem 1rem; border-radius:999px; margin-bottom:1.25rem;
+    }
+
+    /* ══════════════ GALLERY ══════════════ */
+    .gallery-grid {
+      display:grid;
+      grid-template-columns:1.35fr 1fr 1fr;
+      grid-template-rows:280px 210px;
+      gap:1rem;
+    }
+    .gallery-grid .g1 { grid-column:1/2; grid-row:1/3; }
+    .gallery-grid .g2 { grid-column:2/3; grid-row:1/2; }
+    .gallery-grid .g3 { grid-column:3/4; grid-row:1/2; }
+    .gallery-grid .g4 { grid-column:2/4; grid-row:2/3; }
+    @media(max-width:768px) {
+      .gallery-grid { grid-template-columns:1fr 1fr; grid-template-rows:210px 210px 220px; }
+      .gallery-grid .g1 { grid-column:1/3; grid-row:1/2; }
+      .gallery-grid .g2 { grid-column:1/2; grid-row:2/3; }
+      .gallery-grid .g3 { grid-column:2/3; grid-row:2/3; }
+      .gallery-grid .g4 { grid-column:1/3; grid-row:3/4; }
+    }
+    .gallery-item {
+      overflow:hidden; position:relative; border-radius:1.1rem;
+      border:1px solid rgba(168,85,247,.1); cursor:pointer; background:var(--bg2);
+    }
+    .gallery-item::before {
+      content:''; position:absolute; inset:-1px; z-index:2; border-radius:inherit;
+      background:linear-gradient(135deg,rgba(168,85,247,0),rgba(232,121,249,0),rgba(129,140,248,0));
+      -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; transition:background .4s;
+    }
+    .gallery-item:hover::before { background:linear-gradient(135deg,rgba(168,85,247,.7),rgba(232,121,249,.5),rgba(129,140,248,.5)); }
+    .gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform .65s cubic-bezier(.4,0,.2,1),filter .5s; filter:brightness(.78) saturate(1.1); will-change:transform; }
+    .gallery-item:hover img { transform:scale(1.07); filter:brightness(1.05) saturate(1.35); }
+    .gallery-overlay {
+      position:absolute; inset:0; z-index:1;
+      background:linear-gradient(to top,rgba(6,6,10,.92) 0%,rgba(6,6,10,.15) 50%,transparent 100%);
+      display:flex; flex-direction:column; justify-content:flex-end; padding:1.4rem;
+      transition:background .4s;
+    }
+    .gallery-item:hover .gallery-overlay { background:linear-gradient(to top,rgba(50,10,100,.82) 0%,rgba(20,5,40,.35) 55%,transparent 100%); }
+    .gallery-tag {
+      display:inline-flex; align-items:center; gap:.4rem;
+      background:rgba(168,85,247,.22); backdrop-filter:blur(10px); border:1px solid rgba(168,85,247,.38); border-radius:6px;
+      padding:.28rem .7rem; font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+      color:#e9d5ff; font-family:'Oxanium',sans-serif;
+      opacity:0; transform:translateY(10px); transition:opacity .35s ease .05s,transform .35s var(--ease-spring) .05s;
+      margin-bottom:.55rem; align-self:flex-start;
+    }
+    .gallery-item:hover .gallery-tag { opacity:1; transform:translateY(0); }
+    .gallery-title { font-family:'Oxanium',sans-serif; font-weight:700; font-size:1.05rem; color:#fff; text-shadow:0 2px 14px rgba(0,0,0,.9); }
+    .gallery-sub { font-size:.72rem; color:rgba(220,200,255,.55); margin-top:.18rem; }
+
+    /* ══════════════ FEATURE CARDS ══════════════ */
+    .f-card {
+      position:relative; background:linear-gradient(145deg,rgba(18,18,26,.96),rgba(12,12,18,.96));
+      border:1px solid var(--border); border-radius:1.25rem; overflow:hidden;
+      transition:transform .4s var(--ease-spring),box-shadow .4s var(--ease-out),border-color .35s;
+    }
+    .f-card::before { content:''; position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(168,85,247,.1) 0%,transparent 65%); opacity:0; transition:opacity .4s; }
+    .f-card::after { content:''; position:absolute; inset:-1px; z-index:-1; border-radius:inherit; background:linear-gradient(135deg,rgba(168,85,247,0),rgba(232,121,249,0),rgba(129,140,248,0)); transition:background .4s; }
+    .f-card:hover::before { opacity:1; }
+    .f-card:hover::after { background:linear-gradient(135deg,rgba(168,85,247,.6),rgba(232,121,249,.45),rgba(129,140,248,.55)); }
+    .f-card:hover { transform:translateY(-9px) scale(1.01); border-color:transparent; box-shadow:0 28px 75px rgba(168,85,247,.16),0 0 0 1px rgba(168,85,247,.3) inset,0 1px 0 rgba(255,255,255,.04) inset; }
+    .f-card > * { position:relative; z-index:1; }
+    .f-icon { background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(232,121,249,.08)); border:1px solid rgba(168,85,247,.25); transition:border-color .3s,box-shadow .3s,transform .35s var(--ease-spring); }
+    .f-card:hover .f-icon { border-color:rgba(168,85,247,.55); box-shadow:0 0 22px rgba(168,85,247,.25); transform:scale(1.08) rotate(-4deg); }
+    .check-item { display:flex; align-items:center; gap:.6rem; color:var(--text-dim); font-size:.85rem; transition:color .2s; }
+    .check-item:hover { color:#d8b4fe; }
+    .check-dot { width:5px; height:5px; border-radius:50%; background:var(--purple); flex-shrink:0; box-shadow:0 0 6px rgba(168,85,247,.6); }
+
+    /* ══════════════ HOW TO JOIN — STEPS ══════════════ */
+    .step-card {
+      position:relative; background:linear-gradient(145deg,rgba(16,16,24,.96),rgba(10,10,18,.96));
+      border:1px solid rgba(168,85,247,.13); border-radius:1.25rem; padding:2.25rem 2rem;
+      overflow:hidden; transition:transform .4s var(--ease-spring),box-shadow .4s,border-color .35s;
+    }
+    .step-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 55% at 50% -10%,rgba(168,85,247,.09) 0%,transparent 65%); opacity:0; transition:opacity .4s; }
+    .step-card:hover::before { opacity:1; }
+    .step-card:hover { transform:translateY(-7px); border-color:rgba(168,85,247,.35); box-shadow:0 22px 60px rgba(168,85,247,.13); }
+    .step-card > * { position:relative; z-index:1; }
+    .step-num {
+      font-family:'Oxanium',sans-serif; font-size:3.5rem; font-weight:900; line-height:1;
+      background:linear-gradient(135deg,rgba(168,85,247,.35),rgba(168,85,247,.08));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      margin-bottom:.75rem; letter-spacing:-.04em;
+    }
+    /* Connector line between steps */
+    .step-connector {
+      position:absolute; top:50%; right:-1.5rem;
+      width:3rem; height:1px; background:linear-gradient(90deg,rgba(168,85,247,.3),transparent);
+      transform:translateY(-50%); z-index:10; pointer-events:none;
+    }
+    @media(max-width:1023px) { .step-connector { display:none; } }
+
+    /* ══════════════ FACTION BADGES ══════════════ */
+    .faction-badge {
+      background:rgba(14,14,20,.8); border:1px solid rgba(168,85,247,.14); backdrop-filter:blur(8px);
+      transition:background .3s,border-color .3s,transform .35s var(--ease-spring),box-shadow .3s; position:relative; overflow:hidden;
+    }
+    .faction-badge::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(168,85,247,.06) 0%,transparent 70%); opacity:0; transition:opacity .3s; }
+    .faction-badge:hover { background:rgba(168,85,247,.09); border-color:rgba(168,85,247,.4); transform:translateY(-3px) scale(1.02); box-shadow:0 12px 35px rgba(168,85,247,.12); }
+    .faction-badge:hover::after { opacity:1; }
+
+    /* ══════════════ BANDI BOX ══════════════ */
+    .bandi-box {
+      background:linear-gradient(145deg,rgba(14,14,22,.95),rgba(10,10,18,.95));
+      border:1px solid rgba(168,85,247,.25); position:relative; overflow:hidden; backdrop-filter:blur(12px);
+    }
+    .bandi-box::before { content:''; position:absolute; top:-60px; right:-60px; width:280px; height:280px; border-radius:50%; background:radial-gradient(circle,rgba(168,85,247,.15) 0%,transparent 65%); pointer-events:none; filter:blur(20px); }
+    .bandi-box::after  { content:''; position:absolute; bottom:-40px; left:-40px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(129,140,248,.08) 0%,transparent 65%); pointer-events:none; filter:blur(30px); }
+
+    /* ══════════════ STAFF CARDS ══════════════ */
+    .staff-card {
+      background:linear-gradient(160deg,rgba(18,18,26,.95),rgba(12,12,18,.95));
+      border:1px solid var(--border); border-radius:1.25rem;
+      text-align:center; padding:2.75rem 1.75rem 2.25rem;
+      position:relative; overflow:hidden;
+      transition:transform .4s var(--ease-spring),box-shadow .4s,border-color .35s;
+    }
+    .staff-card::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:100px; height:1px; background:linear-gradient(90deg,transparent,rgba(168,85,247,.6),transparent); opacity:0; transition:width .4s,opacity .4s; }
+    .staff-card:hover { transform:translateY(-8px); border-color:rgba(168,85,247,.38); box-shadow:0 24px 65px rgba(168,85,247,.13),0 0 0 1px rgba(168,85,247,.12) inset; }
+    .staff-card:hover::before { opacity:1; width:80%; }
+
+    /* Avatar with generative gradient bg based on role */
+    .staff-avatar {
+      width:92px; height:92px; border-radius:50%; margin:0 auto 1.4rem;
+      border:2px solid rgba(168,85,247,.38);
+      box-shadow:0 0 0 4px rgba(168,85,247,.06),0 0 28px rgba(168,85,247,.18);
+      overflow:hidden; display:flex; align-items:center; justify-content:center;
+      position:relative; transition:box-shadow .4s,border-color .4s;
+    }
+    .staff-card:hover .staff-avatar { border-color:rgba(168,85,247,.65); box-shadow:0 0 0 6px rgba(168,85,247,.08),0 0 40px rgba(168,85,247,.3); }
+    @keyframes ring-spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+    .staff-avatar::before {
+      content:''; position:absolute; inset:-3px; border-radius:50%;
+      background:conic-gradient(transparent 55%,rgba(168,85,247,.7) 75%,rgba(232,121,249,.5) 85%,transparent 100%);
+      animation:ring-spin 3.5s linear infinite; pointer-events:none;
+    }
+    /* Avatar initials styled */
+    .avatar-initials {
+      position:relative; z-index:1; font-family:'Oxanium',sans-serif; font-size:1.35rem; font-weight:800;
+      letter-spacing:.04em; line-height:1;
+    }
+
+    /* ══════════════ FAQ ══════════════ */
+    .faq-item { border:1px solid var(--border); border-radius:.875rem; overflow:hidden; background:rgba(12,12,18,.85); backdrop-filter:blur(8px); transition:border-color .3s,box-shadow .3s; }
+    .faq-item.open { border-color:rgba(168,85,247,.38); box-shadow:0 8px 32px rgba(168,85,247,.08); }
+    .faq-trigger { width:100%; text-align:left; padding:1.35rem 1.6rem; display:flex; justify-content:space-between; align-items:center; background:transparent; border:none; cursor:none; color:var(--text-base); font-family:'DM Sans',sans-serif; font-size:.98rem; font-weight:500; transition:color .2s; }
+    .faq-trigger:hover { color:#d8b4fe; }
+    .faq-trigger .faq-icon { flex-shrink:0; width:30px; height:30px; border-radius:50%; border:1px solid rgba(168,85,247,.28); display:flex; align-items:center; justify-content:center; background:rgba(168,85,247,.06); transition:transform .35s var(--ease-spring),background .3s,border-color .3s; }
+    .faq-item.open .faq-trigger .faq-icon { transform:rotate(45deg); background:rgba(168,85,247,.18); border-color:rgba(168,85,247,.5); }
+    .faq-body { max-height:0; overflow:hidden; transition:max-height .48s cubic-bezier(.4,0,.2,1),padding .38s; padding:0 1.6rem; }
+    .faq-body.open { max-height:420px; padding:0 1.6rem 1.4rem; }
+    .faq-body p { color:var(--text-muted); font-size:.9rem; line-height:1.85; }
+
+    /* ══════════════ BUTTONS ══════════════ */
+    @keyframes shimmer { 0% { background-position:-200% center; } 100% { background-position:200% center; } }
+    @keyframes glow-pulse { 0%,100% { box-shadow:0 0 24px rgba(168,85,247,.3),0 4px 15px rgba(0,0,0,.4); } 50% { box-shadow:0 0 42px rgba(168,85,247,.55),0 4px 20px rgba(0,0,0,.4); } }
+
+    .btn-primary {
+      position:relative; background:linear-gradient(135deg,#9333ea,#7c3aed,#a855f7,#7c3aed); background-size:300% 100%;
+      border:1px solid rgba(168,85,247,.4); box-shadow:0 0 24px rgba(168,85,247,.3),0 4px 15px rgba(0,0,0,.4);
+      transition:transform .25s var(--ease-spring),box-shadow .3s,filter .25s; cursor:none; overflow:hidden;
+      animation:glow-pulse 3s ease-in-out infinite;
+    }
+    .btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.15) 40%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.15) 60%,transparent 100%); background-size:200% 100%; background-position:-200% center; transition:background-position 0s; }
+    .btn-primary:hover::before { animation:shimmer .6s ease forwards; }
+    .btn-primary:hover { transform:translateY(-3px) scale(1.02); box-shadow:0 0 52px rgba(168,85,247,.6),0 8px 25px rgba(0,0,0,.4); filter:brightness(1.1); animation:none; }
+    .btn-primary:active { transform:translateY(-1px) scale(.985); filter:brightness(.95); }
+
+    .btn-secondary {
+      position:relative; background:rgba(10,10,16,.6); border:1px solid rgba(168,85,247,.3); backdrop-filter:blur(8px);
+      transition:transform .25s var(--ease-spring),background .25s,border-color .25s,box-shadow .3s; cursor:none; overflow:hidden;
+    }
+    .btn-secondary::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(168,85,247,.08) 0%,rgba(232,121,249,.05) 100%); opacity:0; transition:opacity .3s; }
+    .btn-secondary:hover::before { opacity:1; }
+    .btn-secondary:hover { transform:translateY(-3px) scale(1.02); border-color:rgba(168,85,247,.65); box-shadow:0 0 28px rgba(168,85,247,.22),0 8px 20px rgba(0,0,0,.3); }
+    .btn-secondary:active { transform:translateY(-1px) scale(.985); }
+
+    .btn-discord { background:linear-gradient(135deg,#5865F2,#4752C4); border:1px solid rgba(88,101,242,.3); box-shadow:0 4px 15px rgba(88,101,242,.25); transition:transform .25s var(--ease-spring),filter .25s,box-shadow .3s; cursor:none; }
+    .btn-discord:hover { transform:translateY(-2px) scale(1.02); filter:brightness(1.12); box-shadow:0 8px 28px rgba(88,101,242,.45); }
+    .btn-discord:active { transform:translateY(-1px) scale(.985); }
+
+    /* ══════════════ SCROLL REVEAL ══════════════ */
+    .reveal { opacity:0; transform:translateY(28px); filter:blur(3px); transition:opacity .75s var(--ease-out),transform .75s var(--ease-out),filter .75s var(--ease-out); }
+    .revealed { opacity:1; transform:translateY(0); filter:blur(0); }
+    .delay-1 { transition-delay:.1s; }
+    .delay-2 { transition-delay:.2s; }
+    .delay-3 { transition-delay:.3s; }
+    .delay-4 { transition-delay:.4s; }
+
+    /* ══════════════ MOBILE MENU ══════════════ */
+    #mobile-menu { max-height:0; overflow:hidden; opacity:0; transition:max-height .38s var(--ease-out),opacity .3s; }
+    #mobile-menu.open { max-height:420px; opacity:1; }
+
+    /* ══════════════ FOOTER ══════════════ */
+    footer { border-top:1px solid rgba(168,85,247,.1); }
+    .footer-tagline { font-family:'Oxanium',sans-serif; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(168,85,247,.3); }
+
+    /* ══════════════ MOBILE OVERRIDES ══════════════ */
+    @media(max-width:768px) {
+      body { cursor:auto; }
+      .cursor-dot,.cursor-ring { display:none; }
+      .faq-trigger,.btn-primary,.btn-secondary,.btn-discord { cursor:pointer; }
+      .btn-primary,.btn-secondary { width:100%; justify-content:center; }
+    }
+
+    /* ══════════════ GLOW PULSE BG ══════════════ */
+    @keyframes bg-glow { 0%,100% { opacity:.08; } 50% { opacity:.14; } }
+    .bg-pulse { animation:bg-glow 6s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+
+<!-- ═══════════════════════════ NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+
+      <a href="#" class="flex items-center gap-3 select-none" data-magnetic>
+        <img src="https://media.discordapp.net/attachments/1504097305366626415/1504097476188180500/lognorealrp.png?ex=6a0da86f&is=6a0c56ef&hm=75154e84e87706c951f1eafe07b2a74f2f09ee7a98c34eac3ff2fa1de1ed854d&=&format=webp&quality=lossless&width=1944&height=1944" alt="RealRP Logo" class="h-9 w-auto object-contain">
+        <span class="font-display font-black text-2xl tracking-widest gt-purple text-glow">REAL<span class="text-white/70">RP</span></span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#gallery"   class="nav-link">Gallery</a>
+        <a href="#features"  class="nav-link">Caratteristiche</a>
+        <a href="#howtojoin" class="nav-link">Come Iniziare</a>
+        <a href="#factions"  class="nav-link">Fazioni</a>
+        <a href="#team"      class="nav-link">Team</a>
+        <a href="#faq"       class="nav-link">FAQ</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener"
+           class="btn-discord hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm" data-magnetic>
+          <i class="fab fa-discord"></i> Entra nel Discord
+        </a>
+        <button id="hamburger" class="md:hidden text-zinc-400 hover:text-white p-2 transition-colors" style="cursor:pointer;">
+          <i class="fas fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu">
+      <div class="pb-5 flex flex-col gap-1 pt-3 border-t border-zinc-800/50">
+        <a href="#gallery"   class="text-zinc-400 hover:text-white py-2.5 px-2 transition-colors text-sm font-medium rounded-lg hover:bg-white/[.03]">Gallery</a>
+        <a href="#features"  class="text-zinc-400 hover:text-white py-2.5 px-2 transition-colors text-sm font-medium rounded-lg hover:bg-white/[.03]">Caratteristiche</a>
+        <a href="#howtojoin" class="text-zinc-400 hover:text-white py-2.5 px-2 transition-colors text-sm font-medium rounded-lg hover:bg-white/[.03]">Come Iniziare</a>
+        <a href="#factions"  class="text-zinc-400 hover:text-white py-2.5 px-2 transition-colors text-sm font-medium rounded-lg hover:bg-white/[.03]">Fazioni</a>
+        <a href="#team"      class="text-zinc-400 hover:text-white py-2.5 px-2 transition-colors text-sm font-medium rounded-lg hover:bg-white/[.03]">Team</a>
+        <a href="#faq"       class="text-zinc-400 hover:text-white py-2.5 px-2 transition-colors text-sm font-medium rounded-lg hover:bg-white/[.03]">FAQ</a>
+        <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener"
+           class="btn-discord inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-white font-semibold text-sm mt-2" style="cursor:pointer;">
+          <i class="fab fa-discord"></i> Entra nel Discord
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════ HERO -->
+<section class="hero-bg hero-grid relative min-h-screen flex flex-col items-center justify-center text-center px-4 pt-24 pb-16 overflow-hidden">
+
+  <!-- Scanlines -->
+  <div class="scan-h" style="top:30%"></div>
+  <div class="scan-h" style="top:65%"></div>
+  <div class="scan-v" style="left:20%"></div>
+  <div class="scan-v" style="left:78%"></div>
+
+  <!-- Orbs -->
+  <div class="orb orb-1" id="orb1"></div>
+  <div class="orb orb-2" id="orb2"></div>
+  <div class="orb orb-3" id="orb3"></div>
+
+  <!-- Live badge -->
+  <div class="hero-badge reveal mb-8 inline-flex items-center gap-2.5 rounded-full px-5 py-2.5 text-sm font-medium text-zinc-300 shadow-lg">
+    <span class="live-dot"></span>
+    <span>Server Attivo</span>
+    <span class="w-px h-3 bg-zinc-700"></span>
+    <span class="text-zinc-500">Connettiti Ora</span>
+  </div>
+
+  <div class="flex justify-center mb-6 reveal">
+    <img src="https://media.discordapp.net/attachments/1504097305366626415/1504097476188180500/lognorealrp.png?ex=6a0da86f&is=6a0c56ef&hm=75154e84e87706c951f1eafe07b2a74f2f09ee7a98c34eac3ff2fa1de1ed854d&=&format=webp&quality=lossless&width=1944&height=1944"
+         alt="RealRP Logo" class="h-32 md:h-44 w-auto object-contain hero-logo">
+  </div>
+
+  <h1 class="reveal font-display font-black leading-none tracking-tight mb-7" style="font-size:clamp(2.8rem,9.5vw,6.2rem);">
+    <span class="gt-purple">LA TUA STORIA</span><br/>
+    <span class="text-white">INIZIA QUI.</span>
+  </h1>
+
+  <p class="reveal delay-1 max-w-2xl text-zinc-400 leading-relaxed mb-11" style="font-size:clamp(.95rem,2vw,1.15rem);line-height:1.9;">
+    RealRP è il server GTA&nbsp;V&nbsp;/&nbsp;FiveM dove il realismo non è un'opzione&nbsp;— è la regola.<br/>
+    Economia autentica, script esclusivi, <span class="text-zinc-100 font-semibold">zero pay-to-win.</span><br/>
+    Ogni scelta conta. Ogni azione ha conseguenze.
+  </p>
+
+  <div class="reveal delay-2 flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto">
+    <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener"
+       class="btn-primary inline-flex items-center gap-3 px-9 py-4 rounded-xl text-white font-display font-bold text-lg tracking-wide" data-magnetic>
+      <i class="fab fa-discord text-xl"></i>
+      Inizia l'Avventura
+    </a>
+    <a href="https://discord.com/channels/1396149371468251236/1499343375965360178" target="_blank" rel="noopener"
+       class="btn-secondary inline-flex items-center gap-3 px-7 py-4 rounded-xl text-purple-300 font-semibold text-base" data-magnetic>
+      <i class="fas fa-heart text-fuchsia-400"></i>
+      Supportaci
+    </a>
+  </div>
+
+  <div class="scroll-indicator absolute bottom-8 left-1/2 flex flex-col items-center gap-1.5">
+    <span class="text-[10px] text-zinc-700 tracking-[.2em] uppercase font-display">Scopri</span>
+    <div class="w-px h-10 bg-gradient-to-b from-zinc-700 to-transparent"></div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════ STATS STRIP -->
+<section class="stats-strip py-8 px-4 relative">
+  <div class="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
+    <div class="reveal flex flex-col items-center gap-1.5">
+      <span class="stat-num font-display font-black text-3xl sm:text-4xl gt-purple" data-count="500" data-suffix="+">500+</span>
+      <span class="text-zinc-600 text-xs uppercase tracking-[.14em] font-medium">Player Registrati</span>
+    </div>
+    <div class="reveal delay-1 flex flex-col items-center gap-1.5">
+      <span class="stat-num font-display font-black text-3xl sm:text-4xl gt-warm" data-count="12" data-suffix="+">12+</span>
+      <span class="text-zinc-600 text-xs uppercase tracking-[.14em] font-medium">Fazioni Attive</span>
+    </div>
+    <div class="reveal delay-2 flex flex-col items-center gap-1.5">
+      <span class="stat-num font-display font-black text-3xl sm:text-4xl gt-cool" data-count="80" data-suffix="+">80+</span>
+      <span class="text-zinc-600 text-xs uppercase tracking-[.14em] font-medium">Script Esclusivi</span>
+    </div>
+    <div class="reveal delay-3 flex flex-col items-center gap-1.5">
+      <span class="stat-num font-display font-black text-3xl sm:text-4xl gt-purple">24/7</span>
+      <span class="text-zinc-600 text-xs uppercase tracking-[.14em] font-medium">Staff Attivo</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════ GALLERY -->
+<section id="gallery" class="py-28 sm:py-36 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label"><i class="fas fa-camera"></i>Scatti dal Server</span>
+      <h2 class="font-display font-black text-4xl sm:text-5xl text-white mb-5">Il mondo di <span class="gt-purple">RealRP</span></h2>
+      <p class="text-zinc-600 max-w-lg mx-auto text-base leading-relaxed">Ogni frame racconta una storia. Ogni storia è reale.</p>
+    </div>
+    <div class="gallery-grid reveal">
+      <div class="gallery-item g1">
+        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" alt="Pattugliamento LSPD" loading="lazy"/>
+        <div class="gallery-overlay">
+          <span class="gallery-tag"><i class="fas fa-shield-halved text-xs"></i> Forze dell'Ordine</span>
+          <p class="gallery-title">Pattugliamenti LSPD</p>
+          <p class="gallery-sub">Ordine e giustizia per le strade di Los Santos</p>
+        </div>
+      </div>
+      <div class="gallery-item g2">
+        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80" alt="Rapine in corso" loading="lazy"/>
+        <div class="gallery-overlay">
+          <span class="gallery-tag"><i class="fas fa-skull text-xs"></i> Crimine</span>
+          <p class="gallery-title">Rapine in Corso</p>
+          <p class="gallery-sub">Il lato oscuro di Los Santos</p>
+        </div>
+      </div>
+      <div class="gallery-item g3">
+        <img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&w=800&q=80" alt="Raduni Tuning" loading="lazy"/>
+        <div class="gallery-overlay">
+          <span class="gallery-tag"><i class="fas fa-car text-xs"></i> Lifestyle</span>
+          <p class="gallery-title">Raduni Tuning</p>
+          <p class="gallery-sub">Cultura automobilistica underground</p>
+        </div>
+      </div>
+      <div class="gallery-item g4">
+        <img src="https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?auto=format&fit=crop&w=1200&q=80" alt="Evento Live" loading="lazy"/>
+        <div class="gallery-overlay">
+          <span class="gallery-tag"><i class="fas fa-star text-xs"></i> Evento Live</span>
+          <p class="gallery-title">Grandi eventi narrativi</p>
+          <p class="gallery-sub">Staff-driven roleplay events che cambiano le sorti del server</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto"></div>
+
+
+<!-- ═══════════════════════════ FEATURES -->
+<section id="features" class="py-28 sm:py-36 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label"><i class="fas fa-bolt"></i>Perché RealRP?</span>
+      <h2 class="font-display font-black text-4xl sm:text-5xl text-white mb-5">Un'esperienza <span class="gt-purple">senza compromessi</span></h2>
+      <p class="text-zinc-600 max-w-xl mx-auto text-base leading-relaxed">Costruito da appassionati, per appassionati. Ogni dettaglio pensato per rendere ogni sessione indimenticabile.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7">
+      <div class="f-card reveal p-8 flex flex-col gap-6">
+        <div class="f-icon w-14 h-14 rounded-xl flex items-center justify-center"><i class="fas fa-city text-purple-400 text-2xl"></i></div>
+        <div>
+          <h3 class="font-display font-bold text-xl text-white mb-2.5">Immersione & Realismo</h3>
+          <p class="text-zinc-500 text-sm leading-relaxed">Animazioni avanzate, identità e documenti, meteo dinamico, ciclo giorno/notte. Ogni dettaglio è costruito per farti dimenticare che stai giocando.</p>
+        </div>
+        <ul class="flex flex-col gap-2.5 mt-auto">
+          <li class="check-item"><span class="check-dot"></span> Whitelist con colloquio</li>
+          <li class="check-item"><span class="check-dot"></span> Sistema identità e documenti</li>
+          <li class="check-item"><span class="check-dot"></span> Lore e eventi narrativi live</li>
+        </ul>
+      </div>
+      <div class="f-card reveal delay-1 p-8 flex flex-col gap-6">
+        <div class="f-icon w-14 h-14 rounded-xl flex items-center justify-center"><i class="fas fa-chart-line text-fuchsia-400 text-2xl"></i></div>
+        <div>
+          <h3 class="font-display font-bold text-xl text-white mb-2.5">Economia Reale</h3>
+          <p class="text-zinc-500 text-sm leading-relaxed">Nessun vantaggio acquistabile. Il mercato di RealRP è mosso esclusivamente dai giocatori: lavori, criminalità, investimenti. Il tuo successo dipende solo da te.</p>
+        </div>
+        <ul class="flex flex-col gap-2.5 mt-auto">
+          <li class="check-item"><span class="check-dot" style="background:var(--fuchsia);box-shadow:0 0 6px rgba(232,121,249,.6)"></span> Zero pay-to-win</li>
+          <li class="check-item"><span class="check-dot" style="background:var(--fuchsia);box-shadow:0 0 6px rgba(232,121,249,.6)"></span> Mercato player-driven</li>
+          <li class="check-item"><span class="check-dot" style="background:var(--fuchsia);box-shadow:0 0 6px rgba(232,121,249,.6)"></span> Imprese e proprietà acquistabili</li>
+        </ul>
+      </div>
+      <div class="f-card reveal delay-2 p-8 flex flex-col gap-6">
+        <div class="f-icon w-14 h-14 rounded-xl flex items-center justify-center"><i class="fas fa-headset text-indigo-400 text-2xl"></i></div>
+        <div>
+          <h3 class="font-display font-bold text-xl text-white mb-2.5">Staff & Supporto 24/7</h3>
+          <p class="text-zinc-500 text-sm leading-relaxed">Il nostro team è composto da persone appassionate, reperibili via ticket Discord in qualsiasi momento. Ogni segnalazione è presa sul serio, ogni problema risolto.</p>
+        </div>
+        <ul class="flex flex-col gap-2.5 mt-auto">
+          <li class="check-item"><span class="check-dot" style="background:#818cf8;box-shadow:0 0 6px rgba(129,140,248,.6)"></span> Ticket Discord sempre attivi</li>
+          <li class="check-item"><span class="check-dot" style="background:#818cf8;box-shadow:0 0 6px rgba(129,140,248,.6)"></span> Staff selezionato con cura</li>
+          <li class="check-item"><span class="check-dot" style="background:#818cf8;box-shadow:0 0 6px rgba(129,140,248,.6)"></span> Regolamento chiaro ed equo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto"></div>
+
+
+<!-- ═══════════════════════════ HOW TO JOIN -->
+<section id="howtojoin" class="py-28 sm:py-36 px-4 relative overflow-hidden">
+
+  <div class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-0 w-[600px] h-64 bg-pulse"
+       style="background:radial-gradient(ellipse,rgba(168,85,247,.1) 0%,transparent 68%);filter:blur(55px);"></div>
+
+  <div class="max-w-7xl mx-auto relative z-10">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label"><i class="fas fa-map-signs"></i>Onboarding</span>
+      <h2 class="font-display font-black text-4xl sm:text-5xl text-white mb-5">Come <span class="gt-purple">Iniziare</span></h2>
+      <p class="text-zinc-600 max-w-xl mx-auto text-base leading-relaxed">Tre passi e sei dentro. Semplice, trasparente, veloce.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 relative">
+
+      <!-- Step 1 -->
+      <div class="step-card reveal relative">
+        <div class="step-connector"></div>
+        <div class="step-num">01</div>
+        <div class="w-12 h-12 rounded-xl bg-purple-900/30 border border-purple-600/30 flex items-center justify-center mb-5">
+          <i class="fab fa-discord text-purple-300 text-xl"></i>
+        </div>
+        <h3 class="font-display font-bold text-xl text-white mb-3">Entra nel Discord</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed mb-5">Unisciti al nostro server Discord, il cuore della community. Troverai canali informativi, il regolamento completo e il canale ticket.</p>
+        <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 text-purple-400 text-sm font-semibold hover:text-purple-300 transition-colors group">
+          discord.gg/RealRP
+          <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-card reveal delay-1 relative">
+        <div class="step-connector"></div>
+        <div class="step-num">02</div>
+        <div class="w-12 h-12 rounded-xl bg-fuchsia-900/30 border border-fuchsia-600/30 flex items-center justify-center mb-5">
+          <i class="fas fa-scroll text-fuchsia-300 text-xl"></i>
+        </div>
+        <h3 class="font-display font-bold text-xl text-white mb-3">Leggi il Regolamento</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed mb-5">Prima di candidarti, leggi attentamente il regolamento nel canale dedicato. Conoscere le regole è il primo segno di un buon roleplayer.</p>
+        <span class="inline-flex items-center gap-2 text-fuchsia-400 text-sm font-semibold">
+          <i class="fas fa-check-circle text-xs"></i>
+          Fondamentale per la whitelist
+        </span>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-card reveal delay-2">
+        <div class="step-num">03</div>
+        <div class="w-12 h-12 rounded-xl bg-indigo-900/30 border border-indigo-600/30 flex items-center justify-center mb-5">
+          <i class="fas fa-ticket text-indigo-300 text-xl"></i>
+        </div>
+        <h3 class="font-display font-bold text-xl text-white mb-3">Apri il Ticket Whitelist</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed mb-5">Apri un ticket nel canale apposito e sostieni il breve colloquio con lo staff. Non è un esame, è una chiacchierata. Risposta garantita entro 24–48h.</p>
+        <span class="inline-flex items-center gap-2 text-indigo-400 text-sm font-semibold">
+          <i class="fas fa-clock text-xs"></i>
+          Risposta entro 24–48 ore
+        </span>
+      </div>
+
+    </div>
+
+    <!-- CTA under steps -->
+    <div class="text-center mt-14 reveal delay-3">
+      <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener"
+         class="btn-primary inline-flex items-center gap-3 px-9 py-4 rounded-xl text-white font-display font-bold text-base" data-magnetic>
+        <i class="fab fa-discord text-lg"></i>
+        Inizia Adesso — È Gratis
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto"></div>
+
+
+<!-- ═══════════════════════════ FACTIONS -->
+<section id="factions" class="py-28 sm:py-36 px-4 relative overflow-hidden">
+  <div class="pointer-events-none absolute -right-52 top-1/4 w-96 h-96 bg-pulse rounded-full" style="background:radial-gradient(circle,rgba(168,85,247,.12),transparent 70%);filter:blur(75px);"></div>
+  <div class="pointer-events-none absolute -left-36 bottom-1/4 w-80 h-80 rounded-full" style="background:radial-gradient(circle,rgba(129,140,248,.07),transparent 70%);filter:blur(70px);opacity:.7;"></div>
+  <div class="max-w-7xl mx-auto relative z-10">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label"><i class="fas fa-people-group"></i>Organizzazione</span>
+      <h2 class="font-display font-black text-4xl sm:text-5xl text-white mb-5">Fazioni & <span class="gt-purple">Candidature</span></h2>
+      <p class="text-zinc-600 max-w-2xl mx-auto text-base leading-relaxed">Dal lato della legge o nell'ombra della criminalità, ogni ruolo richiede dedizione.</p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <div class="reveal">
+        <h3 class="font-display font-bold text-lg text-zinc-400 mb-7 flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-md bg-purple-500/15 border border-purple-500/25 flex items-center justify-center"><i class="fas fa-shield-halved text-purple-400 text-xs"></i></span>
+          Fazioni Principali
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="faction-badge rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-900/30 border border-blue-700/30 flex items-center justify-center flex-shrink-0"><i class="fas fa-shield text-blue-400 text-sm"></i></div>
+            <div><p class="font-semibold text-zinc-200 text-sm">Polizia (LSPD)</p><p class="text-zinc-600 text-xs mt-0.5">Ordine e Giustizia</p></div>
+          </div>
+          <div class="faction-badge rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-red-900/30 border border-red-700/30 flex items-center justify-center flex-shrink-0"><i class="fas fa-skull text-red-400 text-sm"></i></div>
+            <div><p class="font-semibold text-zinc-200 text-sm">Criminalità Organizzata</p><p class="text-zinc-600 text-xs mt-0.5">Potere nell'ombra</p></div>
+          </div>
+          <div class="faction-badge rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-orange-900/30 border border-orange-700/30 flex items-center justify-center flex-shrink-0"><i class="fas fa-ambulance text-orange-400 text-sm"></i></div>
+            <div><p class="font-semibold text-zinc-200 text-sm">EMS — Emergenze</p><p class="text-zinc-600 text-xs mt-0.5">Vita o morte</p></div>
+          </div>
+          <div class="faction-badge rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-purple-900/30 border border-purple-700/30 flex items-center justify-center flex-shrink-0"><i class="fas fa-gavel text-purple-400 text-sm"></i></div>
+            <div><p class="font-semibold text-zinc-200 text-sm">Magistratura</p><p class="text-zinc-600 text-xs mt-0.5">Legge e Tribunale</p></div>
+          </div>
+          <div class="faction-badge rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-green-900/30 border border-green-700/30 flex items-center justify-center flex-shrink-0"><i class="fas fa-briefcase text-green-400 text-sm"></i></div>
+            <div><p class="font-semibold text-zinc-200 text-sm">Imprenditori Civili</p><p class="text-zinc-600 text-xs mt-0.5">Economia e Commercio</p></div>
+          </div>
+          <div class="faction-badge rounded-xl p-4 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-yellow-900/30 border border-yellow-700/30 flex items-center justify-center flex-shrink-0"><i class="fas fa-newspaper text-yellow-400 text-sm"></i></div>
+            <div><p class="font-semibold text-zinc-200 text-sm">Giornalisti & Media</p><p class="text-zinc-600 text-xs mt-0.5">Informazione in gioco</p></div>
+          </div>
+        </div>
+        <p class="text-zinc-800 text-xs mt-5 italic pl-1">…e molte altre fazioni attive e in espansione.</p>
+      </div>
+      <div class="reveal delay-1">
+        <div class="bandi-box rounded-2xl p-8 sm:p-10">
+          <div class="flex items-start gap-4 mb-7 relative z-10">
+            <div class="w-12 h-12 rounded-xl bg-purple-900/40 border border-purple-600/35 flex items-center justify-center flex-shrink-0"><i class="fas fa-bullhorn text-purple-300 text-base"></i></div>
+            <div>
+              <span class="inline-block bg-purple-500/15 text-purple-300 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-purple-500/25 mb-2">Bandi Aperti</span>
+              <h3 class="font-display font-extrabold text-2xl text-white">Provini & Whitelist</h3>
+            </div>
+          </div>
+          <p class="text-zinc-500 text-sm leading-relaxed mb-7 relative z-10">Vuoi entrare in una fazione? Candidarti come staff? Tutto avviene tramite <strong class="text-purple-300 font-semibold">ticket su Discord</strong>. Processo semplice, trasparente e gestito dal team in tempi rapidi.</p>
+          <ul class="flex flex-col gap-4 mb-9 relative z-10">
+            <li class="flex items-start gap-3 text-zinc-500 text-sm">
+              <span class="w-5 h-5 rounded-full bg-purple-500/15 border border-purple-500/25 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-chevron-right text-purple-400 text-[9px]"></i></span>
+              <span><strong class="text-zinc-300 font-medium">Whitelist Giocatore:</strong> Colloquio di ambientazione via ticket per accedere al server.</span>
+            </li>
+            <li class="flex items-start gap-3 text-zinc-500 text-sm">
+              <span class="w-5 h-5 rounded-full bg-purple-500/15 border border-purple-500/25 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-chevron-right text-purple-400 text-[9px]"></i></span>
+              <span><strong class="text-zinc-300 font-medium">Candidatura Fazione:</strong> Compila il modulo allegato al ticket della fazione che ti interessa.</span>
+            </li>
+            <li class="flex items-start gap-3 text-zinc-500 text-sm">
+              <span class="w-5 h-5 rounded-full bg-purple-500/15 border border-purple-500/25 flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-chevron-right text-purple-400 text-[9px]"></i></span>
+              <span><strong class="text-zinc-300 font-medium">Staff Trial:</strong> Periodicamente apriamo selezioni per moderatori e admin.</span>
+            </li>
+          </ul>
+          <a href="#LINK_TICKET_CANDIDATURA" target="_blank" rel="noopener"
+             class="btn-primary relative z-10 w-full sm:w-auto inline-flex items-center justify-center gap-3 px-7 py-3.5 rounded-xl text-white font-display font-bold text-base" data-magnetic>
+            <i class="fab fa-discord text-lg"></i>
+            Apri un Ticket Candidatura
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto"></div>
+
+
+<!-- ═══════════════════════════ TEAM -->
+<section id="team" class="py-28 sm:py-36 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label"><i class="fas fa-user-shield"></i>Management</span>
+      <h2 class="font-display font-black text-4xl sm:text-5xl text-white mb-5">Il Nostro <span class="gt-purple">Team</span></h2>
+      <p class="text-zinc-600 max-w-xl mx-auto text-base leading-relaxed">Persone reali dietro ogni decisione. Appassionate, competenti, sempre presenti.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Founder -->
+      <div class="staff-card reveal">
+        <div class="staff-avatar" style="background:linear-gradient(135deg,rgba(234,179,8,.18),rgba(161,98,7,.1));">
+          <span class="avatar-initials gt-warm">FS</span>
+        </div>
+        <h4 class="font-display font-bold text-white text-lg mb-1.5">Founder</h4>
+        <span class="inline-block text-xs font-bold uppercase tracking-wider text-yellow-400 bg-yellow-400/8 border border-yellow-500/20 rounded-full px-3 py-1 mb-2.5">Founder &amp; Owner</span>
+        <p class="text-zinc-700 text-xs">@live_football_sgs</p>
+      </div>
+
+      <!-- Co-Owner -->
+      <div class="staff-card reveal delay-1">
+        <div class="staff-avatar" style="border-color:rgba(232,121,249,.4);box-shadow:0 0 0 4px rgba(232,121,249,.05),0 0 24px rgba(232,121,249,.16);background:linear-gradient(135deg,rgba(232,121,249,.18),rgba(168,85,247,.1));">
+          <span class="avatar-initials" style="background:linear-gradient(135deg,#f0abfc,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">CO</span>
+        </div>
+        <h4 class="font-display font-bold text-white text-lg mb-1.5">Co-Owner</h4>
+        <span class="inline-block text-xs font-bold uppercase tracking-wider text-fuchsia-400 bg-fuchsia-400/8 border border-fuchsia-500/20 rounded-full px-3 py-1 mb-2.5">Co-Owner &amp; Admin</span>
+        <p class="text-zinc-700 text-xs">@fox13_</p>
+      </div>
+
+      <!-- Developer -->
+      <div class="staff-card reveal delay-2">
+        <div class="staff-avatar" style="border-color:rgba(129,140,248,.4);box-shadow:0 0 0 4px rgba(129,140,248,.05),0 0 24px rgba(129,140,248,.16);background:linear-gradient(135deg,rgba(129,140,248,.2),rgba(99,102,241,.1));">
+          <span class="avatar-initials" style="background:linear-gradient(135deg,#a5b4fc,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">DV</span>
+        </div>
+        <h4 class="font-display font-bold text-white text-lg mb-1.5">Developer</h4>
+        <span class="inline-block text-xs font-bold uppercase tracking-wider text-indigo-400 bg-indigo-400/8 border border-indigo-500/20 rounded-full px-3 py-1 mb-2.5">Lead Developer</span>
+        <p class="text-zinc-700 text-xs">@capitanema8</p>
+      </div>
+
+      <!-- Moderatore -->
+      <div class="staff-card reveal delay-3">
+        <div class="staff-avatar" style="border-color:rgba(52,211,153,.3);box-shadow:0 0 0 4px rgba(52,211,153,.04),0 0 24px rgba(52,211,153,.1);background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(16,185,129,.08));">
+          <span class="avatar-initials" style="background:linear-gradient(135deg,#6ee7b7,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">MO</span>
+        </div>
+        <h4 class="font-display font-bold text-white text-lg mb-1.5">NomeModerator</h4>
+        <span class="inline-block text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/8 border border-emerald-500/20 rounded-full px-3 py-1 mb-2.5">Senior Moderator</span>
+        <p class="text-zinc-700 text-xs">@DiscordTag</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto"></div>
+
+
+<!-- ═══════════════════════════ FAQ -->
+<section id="faq" class="py-28 sm:py-36 px-4 relative overflow-hidden">
+  <div class="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-10 w-[520px] h-72" style="background:radial-gradient(ellipse,rgba(168,85,247,.1) 0%,transparent 68%);filter:blur(55px);opacity:.8;"></div>
+  <div class="max-w-3xl mx-auto relative z-10">
+    <div class="text-center mb-16 reveal">
+      <span class="section-label"><i class="fas fa-circle-question"></i>Regolamento Rapido</span>
+      <h2 class="font-display font-black text-4xl sm:text-5xl text-white mb-5">Domande <span class="gt-purple">Frequenti</span></h2>
+      <p class="text-zinc-600 max-w-lg mx-auto text-base leading-relaxed">Tutto quello che devi sapere prima di entrare. Leggi, poi unisciti.</p>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div class="faq-item reveal" data-faq>
+        <button class="faq-trigger" data-trigger>
+          <span class="flex items-center gap-3.5 text-left"><span class="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0"><i class="fas fa-masks-theater text-purple-400 text-xs"></i></span>Cos'è il Roleplay su RealRP?</span>
+          <span class="faq-icon ml-4"><i class="fas fa-plus text-purple-400 text-xs"></i></span>
+        </button>
+        <div class="faq-body" data-body><p>Il Roleplay (RP) è l'interpretazione di un personaggio all'interno di un contesto narrativo condiviso. Su RealRP il tuo personaggio ha un nome, una storia, una professione e un conto in banca. Non sei tu a giocare — sei il tuo alter ego. Ogni conversazione, ogni azione, ogni scelta deve essere coerente con il tuo personaggio. Non esiste il "quarto muro": quello che succede in gioco, rimane in gioco.</p></div>
+      </div>
+      <div class="faq-item reveal delay-1" data-faq>
+        <button class="faq-trigger" data-trigger>
+          <span class="flex items-center gap-3.5 text-left"><span class="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0"><i class="fas fa-door-open text-purple-400 text-xs"></i></span>Come funziona la Whitelist?</span>
+          <span class="faq-icon ml-4"><i class="fas fa-plus text-purple-400 text-xs"></i></span>
+        </button>
+        <div class="faq-body" data-body><p>La whitelist è il processo che garantisce la qualità della community. Dopo aver letto il regolamento completo, dovrai aprire un <strong class="text-purple-300">ticket su Discord</strong> e sostenere un breve colloquio con uno staff member. Il colloquio non è un esame — è una chiacchierata per capire se conosci le basi del RP e sei pronto a vivere l'esperienza al meglio. I tempi di risposta sono generalmente entro 24-48 ore.</p></div>
+      </div>
+      <div class="faq-item reveal delay-2" data-faq>
+        <button class="faq-trigger" data-trigger>
+          <span class="flex items-center gap-3.5 text-left"><span class="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0"><i class="fas fa-ban text-purple-400 text-xs"></i></span>Cosa sono FailRP e Powergaming?</span>
+          <span class="faq-icon ml-4"><i class="fas fa-plus text-purple-400 text-xs"></i></span>
+        </button>
+        <div class="faq-body" data-body><p><strong class="text-zinc-300">FailRP</strong> significa fare azioni che il tuo personaggio non farebbe logicamente (es. ridere durante un sequestro, ignorare una pistola puntata in faccia). <strong class="text-zinc-300">Powergaming</strong> significa forzare azioni sul personaggio altrui senza dargli possibilità di reagire. Entrambi sono comportamenti puniti severamente, fino al ban permanente.</p></div>
+      </div>
+      <div class="faq-item reveal delay-3" data-faq>
+        <button class="faq-trigger" data-trigger>
+          <span class="flex items-center gap-3.5 text-left"><span class="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center flex-shrink-0"><i class="fas fa-heart text-purple-400 text-xs"></i></span>Come funzionano le donazioni?</span>
+          <span class="faq-icon ml-4"><i class="fas fa-plus text-purple-400 text-xs"></i></span>
+        </button>
+        <div class="faq-body" data-body><p>RealRP si sostiene grazie alla generosità volontaria della community. <strong class="text-zinc-300">Non esiste nessun sistema di pagamento su questo sito</strong>. Se vuoi supportare il server, apri un <strong class="text-purple-300">ticket dedicato "Donazioni" sul nostro Discord</strong>. Lo staff ti guiderà nel processo in modo trasparente. Ogni centesimo va direttamente ai costi del server.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-6xl mx-auto"></div>
+
+
+<!-- ═══════════════════════════ FINAL CTA -->
+<section class="py-28 sm:py-36 px-4 relative overflow-hidden">
+  <div class="pointer-events-none absolute inset-0" style="background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(168,85,247,.07) 0%,transparent 68%);"></div>
+  <div class="max-w-4xl mx-auto text-center reveal relative z-10">
+    <div class="inline-flex items-center gap-2.5 bg-zinc-950/80 border border-purple-900/40 rounded-full px-5 py-2.5 text-sm text-purple-400 font-medium mb-9 backdrop-blur-sm">
+      <i class="fas fa-users text-xs"></i> Community Seria & Accogliente
+    </div>
+    <h2 class="font-display font-black text-white mb-7 leading-tight" style="font-size:clamp(2.2rem,5.5vw,3.75rem);">
+      Sei pronto a <span class="gt-purple">lasciare il segno</span><br/>su Los Santos?
+    </h2>
+    <p class="text-zinc-500 text-lg max-w-2xl mx-auto mb-12 leading-relaxed">
+      Non stiamo vendendo un gioco — ti stiamo invitando in un mondo.<br/>
+      Un posto dove la tua storia, le tue alleanze e le tue scelte hanno peso reale.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm mx-auto sm:max-w-none">
+      <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener"
+         class="btn-primary inline-flex items-center gap-3 px-10 py-4 rounded-xl text-white font-display font-bold text-lg" data-magnetic>
+        <i class="fab fa-discord text-xl"></i> Unisciti al Discord
+      </a>
+      <a href="https://discord.com/channels/1396149371468251236/1499343375965360178" target="_blank" rel="noopener"
+         class="btn-secondary inline-flex items-center gap-3 px-8 py-4 rounded-xl text-purple-300 font-semibold text-base" data-magnetic>
+        <i class="fas fa-heart text-fuchsia-400"></i> Supporta il Server
+      </a>
+    </div>
+    <p class="text-zinc-800 text-xs mt-7">Le donazioni si gestiscono <strong class="text-zinc-700">esclusivamente tramite ticket su Discord</strong>. Nessun acquisto su questo sito.</p>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════ FOOTER -->
+<footer class="py-14 px-4">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Footer tagline -->
+    <div class="text-center mb-10 reveal">
+      <p class="footer-tagline mb-3">Il tuo personaggio. La tua storia. La tua leggenda.</p>
+      <span class="font-display font-black text-3xl tracking-widest gt-purple text-glow">REAL<span class="text-zinc-600">RP</span></span>
+    </div>
+
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-9">
+      <div class="flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-700">
+        <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener" class="hover:text-zinc-400 transition-colors">Discord</a>
+        <a href="#gallery"   class="hover:text-zinc-400 transition-colors">Gallery</a>
+        <a href="#features"  class="hover:text-zinc-400 transition-colors">Caratteristiche</a>
+        <a href="#howtojoin" class="hover:text-zinc-400 transition-colors">Come Iniziare</a>
+        <a href="#factions"  class="hover:text-zinc-400 transition-colors">Fazioni</a>
+        <a href="#team"      class="hover:text-zinc-400 transition-colors">Team</a>
+        <a href="#faq"       class="hover:text-zinc-400 transition-colors">FAQ</a>
+      </div>
+      <a href="https://discord.gg/FF7HbtXZ7k" target="_blank" rel="noopener"
+         class="w-9 h-9 rounded-lg bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-600 hover:text-purple-400 hover:border-purple-800/60 transition-all">
+        <i class="fab fa-discord text-sm"></i>
+      </a>
+    </div>
+
+    <div class="divider mb-7"></div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-800">
+      <p>© 2025 RealRP. Tutti i diritti riservati.</p>
+      <p class="text-center max-w-md leading-relaxed">Progetto amatoriale indipendente. Non affiliato con <strong class="text-zinc-700">Rockstar Games</strong> o <strong class="text-zinc-700">Take-Two Interactive</strong>.</p>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════ JS -->
+<script>
+(function() {
+  'use strict';
+
+  /* ── CURSOR ── */
+  const dot  = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  if (dot && ring && window.innerWidth > 768) {
+    document.addEventListener('mousemove', e => {
+      mx=e.clientX; my=e.clientY;
+      dot.style.left=mx+'px'; dot.style.top=my+'px';
+    });
+    (function animRing(){
+      rx+=(mx-rx)*.13; ry+=(my-ry)*.13;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(animRing);
+    })();
+    document.querySelectorAll('a,button,[data-magnetic],.gallery-item,.faq-trigger,.faction-badge,.step-card').forEach(el=>{
+      el.addEventListener('mouseenter',()=>ring.classList.add('expand'));
+      el.addEventListener('mouseleave',()=>ring.classList.remove('expand'));
+    });
+    document.addEventListener('mousedown',()=>{ dot.style.transform='translate(-50%,-50%) scale(.55)'; });
+    document.addEventListener('mouseup',  ()=>{ dot.style.transform='translate(-50%,-50%) scale(1)'; });
+  }
+
+  /* ── PARALLAX ORBS ── */
+  const orb1=document.getElementById('orb1'),orb2=document.getElementById('orb2'),orb3=document.getElementById('orb3');
+  window.addEventListener('mousemove', e=>{
+    const cx=(e.clientX/window.innerWidth-.5)*2;
+    const cy=(e.clientY/window.innerHeight-.5)*2;
+    if(orb1) orb1.style.transform=`translate(calc(-50% + ${cx*18}px),calc(-50% + ${cy*14}px))`;
+    if(orb2) orb2.style.transform=`translate(${cx*-22}px,${cy*-16}px)`;
+    if(orb3) orb3.style.transform=`translate(${cx*14}px,${cy*18}px)`;
+  },{passive:true});
+
+  /* ── NAVBAR SCROLL ── */
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',()=>navbar.classList.toggle('scrolled',window.scrollY>50),{passive:true});
+
+  /* ── HAMBURGER ── */
+  const ham=document.getElementById('hamburger'),mob=document.getElementById('mobile-menu');
+  ham.addEventListener('click',()=>{
+    mob.classList.toggle('open');
+    const ic=ham.querySelector('i');
+    ic.classList.toggle('fa-bars'); ic.classList.toggle('fa-xmark');
+  });
+  mob.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+    mob.classList.remove('open');
+    ham.querySelector('i').classList.add('fa-bars');
+    ham.querySelector('i').classList.remove('fa-xmark');
+  }));
+
+  /* ── SCROLL REVEAL ── */
+  const revObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('revealed'); revObs.unobserve(e.target); } });
+  },{threshold:.07,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+  /* ── FAQ ── */
+  document.querySelectorAll('[data-faq]').forEach(item=>{
+    item.querySelector('[data-trigger]').addEventListener('click',()=>{
+      const open=item.classList.contains('open');
+      document.querySelectorAll('[data-faq]').forEach(i=>{ i.classList.remove('open'); i.querySelector('[data-body]').classList.remove('open'); });
+      if(!open){ item.classList.add('open'); item.querySelector('[data-body]').classList.add('open'); }
+    });
+  });
+
+  /* ── MAGNETIC ── */
+  document.querySelectorAll('[data-magnetic]').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      const cx=e.clientX-r.left-r.width/2, cy=e.clientY-r.top-r.height/2;
+      const dist=Math.sqrt(cx*cx+cy*cy), maxR=Math.max(r.width,r.height)*.85;
+      if(dist<maxR){ const s=1-dist/maxR; el.style.transform=`translate(${cx*s*.38}px,${cy*s*.3}px)`; }
+    });
+    el.addEventListener('mouseleave',()=>el.style.transform='');
+  });
+
+  /* ── COUNTERS ── */
+  const cntObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el=e.target, target=parseInt(el.dataset.count), suffix=el.dataset.suffix||'';
+      if(isNaN(target)) return;
+      const dur=1600, t0=performance.now();
+      const tick=now=>{
+        const p=Math.min((now-t0)/dur,1);
+        const eased=1-Math.pow(1-p,3);
+        el.textContent=Math.floor(eased*target)+suffix;
+        if(p<1) requestAnimationFrame(tick); else el.textContent=target+suffix;
+      };
+      requestAnimationFrame(tick);
+      cntObs.unobserve(el);
+    });
+  },{threshold:.5});
+  document.querySelectorAll('[data-count]').forEach(el=>cntObs.observe(el));
+
+  /* ── ACTIVE NAV LINK on scroll ── */
+  const sections=document.querySelectorAll('section[id]');
+  const navLinks=document.querySelectorAll('.nav-link');
+  const activeObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        navLinks.forEach(l=>l.classList.remove('text-white'));
+        const active=document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+        if(active) active.classList.add('text-white');
+      }
+    });
+  },{threshold:.4});
+  sections.forEach(s=>activeObs.observe(s));
+
+})();
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done: $(wc -c < /home/claude/index.html) bytes"
